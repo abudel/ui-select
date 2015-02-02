@@ -180,6 +180,8 @@
     ctrl.selected = undefined;
     ctrl.open = false;
     ctrl.focus = false;
+    ctrl.refreshOnActive = undefined;
+    ctrl.refreshIsActive = undefined;
     ctrl.focusser = undefined; //Reference to input element used to handle focus events
     ctrl.disabled = undefined; // Initialized inside uiSelect directive link function
     ctrl.searchEnabled = undefined; // Initialized inside uiSelect directive link function
@@ -223,6 +225,8 @@
         ctrl.activeMatchIndex = -1;
 
         ctrl.activeIndex = ctrl.activeIndex >= ctrl.items.length ? 0 : ctrl.activeIndex;
+
+        ctrl.refreshIsActive = true;
 
         // ensure that the index is set to zero for tagging variants
         // that where first option is auto-selected
@@ -1284,6 +1288,8 @@
           $select.disableChoiceExpression = attrs.uiDisableChoice;
           $select.onHighlightCallback = attrs.onHighlight;
 
+          $select.refreshOnActive = attrs.refreshOnActive;
+
           if(groupByExp) {
             var groups = element.querySelectorAll('.ui-select-choices-group');
             if (groups.length !== 1) throw uiSelectMinErr('rows', "Expected 1 .ui-select-choices-group but got '{0}'.", groups.length);
@@ -1309,7 +1315,15 @@
           scope.$watch('$select.search', function(newValue) {
             if(newValue && !$select.open && $select.multiple) $select.activate(false, true);
             $select.activeIndex = $select.tagging.isActivated ? -1 : 0;
-            $select.refresh(attrs.refresh);
+            if(angular.isUndefined($select.refreshOnActive) || ($select.refreshOnActive && $select.refreshIsActive)) {
+              $select.refresh(attrs.refresh);
+            }
+          });
+
+          scope.$watch('$select.refreshIsActive', function(value){
+            if(angular.isUndefined(value)){
+              $select.refresh(attrs.refresh);
+            }
           });
 
           attrs.$observe('refreshDelay', function() {
