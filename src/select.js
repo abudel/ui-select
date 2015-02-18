@@ -345,6 +345,21 @@
       }
     };
 
+    /**
+     * Refresh method for pagination
+     */
+    ctrl.refreshPagination = function(refreshPaginationAttr){
+      if (refreshPaginationAttr !== undefined) {
+        if (_refreshDelayPromise) {
+          $timeout.cancel(_refreshDelayPromise);
+        }
+        _refreshDelayPromise = $timeout(function() {
+          $scope.$eval(refreshPaginationAttr);
+        }, ctrl.refreshDelay);
+      }
+    };
+
+
     ctrl.setActiveItem = function(item) {
       ctrl.activeIndex = ctrl.items.indexOf(item);
     };
@@ -1301,6 +1316,15 @@
             throw uiSelectMinErr('rows', "Expected 1 .ui-select-choices-row but got '{0}'.", choices.length);
           }
 
+          // paginations
+          if(!angular.isUndefined(attrs.refreshPagination)){
+            element.on('scroll', function(){
+              if(this.scrollLeft === 0){
+                $select.refreshPagination(attrs.refreshPagination);
+              }
+            });
+          }
+
           choices.attr('ng-repeat', RepeatParser.getNgRepeatExpression($select.parserResult.itemName, '$select.items', $select.parserResult.trackByExp, groupByExp))
               .attr('ng-if', '$select.open') //Prevent unnecessary watches when dropdown is closed
               .attr('ng-mouseenter', '$select.setActiveItem('+$select.parserResult.itemName +')')
@@ -1330,6 +1354,10 @@
             // $eval() is needed otherwise we get a string instead of a number
             var refreshDelay = scope.$eval(attrs.refreshDelay);
             $select.refreshDelay = refreshDelay !== undefined ? refreshDelay : uiSelectConfig.refreshDelay;
+          });
+
+          scope.$on('$destroy', function() {
+            element.off('scroll');
           });
         };
       }
