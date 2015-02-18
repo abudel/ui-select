@@ -1288,7 +1288,7 @@
           $select.disableChoiceExpression = attrs.uiDisableChoice;
           $select.onHighlightCallback = attrs.onHighlight;
 
-          $select.refreshOnActive = attrs.refreshOnActive;
+          $select.refreshOnActive = scope.$eval(attrs.refreshOnActive);
 
           if(groupByExp) {
             var groups = element.querySelectorAll('.ui-select-choices-group');
@@ -1315,13 +1315,13 @@
           scope.$watch('$select.search', function(newValue) {
             if(newValue && !$select.open && $select.multiple) $select.activate(false, true);
             $select.activeIndex = $select.tagging.isActivated ? -1 : 0;
-            if(angular.isUndefined($select.refreshOnActive) || ($select.refreshOnActive && $select.refreshIsActive)) {
+            if(!$select.refreshOnActive || ($select.refreshOnActive && $select.refreshIsActive)) {
               $select.refresh(attrs.refresh);
             }
           });
 
-          scope.$watch('$select.refreshIsActive', function(value){
-            if(angular.isUndefined(value)){
+          scope.$watch('$select.refreshIsActive', function(newValue, oldValue){
+            if(angular.isUndefined(oldValue) && newValue){
               $select.refresh(attrs.refresh);
             }
           });
