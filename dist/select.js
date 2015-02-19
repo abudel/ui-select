@@ -1,7 +1,7 @@
 /*!
  * ui-select
  * http://github.com/angular-ui/ui-select
- * Version: 0.9.9 - 2015-02-18T22:27:18.134Z
+ * Version: 0.9.9 - 2015-02-19T00:31:24.798Z
  * License: MIT
  */
 
@@ -1327,7 +1327,7 @@
           // paginations
           if(!angular.isUndefined(attrs.refreshPagination)){
             element.on('scroll', function(){
-              if(this.scrollLeft === 0){
+              if(this.scrollHeight > this.offsetHeight && (this.scrollTop + this.offsetHeight) === this.scrollHeight){
                 $select.refreshPagination(attrs.refreshPagination);
               }
             });
