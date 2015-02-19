@@ -1319,7 +1319,7 @@
           // paginations
           if(!angular.isUndefined(attrs.refreshPagination)){
             element.on('scroll', function(){
-              if(this.scrollLeft === 0){
+              if(this.scrollHeight > this.offsetHeight && (this.scrollTop + this.offsetHeight) === this.scrollHeight){
                 $select.refreshPagination(attrs.refreshPagination);
               }
             });
